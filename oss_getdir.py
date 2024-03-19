@@ -228,19 +228,23 @@ def root_directory_list(bucket):
 def root_directory_list_md5(bucket):
     # 设置Delimiter参数为正斜线（/）。
     num = 0
-    for obj in oss2.ObjectIterator(bucket, delimiter='/'):
-        # 通过is_prefix方法判断obj是否为文件夹。
-        if obj.is_prefix():  # 文件夹
-            global root_dir_DNA
-            global root_dir_RNA
-            #root_dir = f"{download_local_save_prefix}/{obj.key}"
-            prefix_all_list_md5(bucket)
-        # else:  # 文件
-        #     # print('file: ' + obj.key)
-        #     # 下载根目录的单个文件
-        #     download_to_local(bucket,obj.key)
-        #     num += 1
-        #     # print(num)
+    try:
+        for obj in oss2.ObjectIterator(bucket, delimiter='/'):
+            # 通过is_prefix方法判断obj是否为文件夹。
+            if obj.is_prefix():  # 文件夹
+                global root_dir_DNA
+                global root_dir_RNA
+                #root_dir = f"{download_local_save_prefix}/{obj.key}"
+                prefix_all_list_md5(bucket)
+            # else:  # 文件
+            #     # print('file: ' + obj.key)
+            #     # 下载根目录的单个文件
+            #     download_to_local(bucket,obj.key)
+            #     num += 1
+            #     # print(num)
+    except:
+        return 0
+    return 1
 
 
 '''
@@ -377,8 +381,13 @@ if __name__ == '__main__':
         os.mkdir(download_local_save_prefix+"/RNA/rawdata")
     except FileExistsError:
         pass
-
-    root_directory_list_md5(bucket)
+    result = 0
+    while result == 0:
+        try:
+            result = root_directory_list_md5(bucket)
+        except Exception as e:
+            print(e)
+            continue
     # dna_data_dir_list = os.listdir(root_dir_DNA)
     # rna_data_dir_list = os.listdir(root_dir_RNA)
     # print(data_dir_list)

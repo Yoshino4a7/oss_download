@@ -108,17 +108,29 @@ def prefix_all_list_md5(bucket):
 
 def all_list_md5_dna(bucket):
     iter_complete = False
+    for dna_dir in DNA_list:
+        prefix = dna_dir
+        list = [download_local_save_prefix,"DNA",prefix]
+        dir = "/".join(list)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        key = os.path.join(prefix, "MD5.txt")
+        key = key.replace("\\","/")
+        download_to_local(bucket, key, 0)
+        root_dir = "/".join(list)
+        #print(root_dir)
+        subprocess.Popen(["D:\\Git\\git-bash.exe", "-c", f"python file_check.py -d {root_dir} ; bash"])
     for obj in oss2.ObjectIterator(bucket):
         key = obj.key
         # print(key)
         if key.count("/") >= 2:
             try:
-                if key.endswith("MD5.txt"):
-                    prefix = key[:key.index("MD5.txt")]
-                    if prefix in DNA_list:
-                        # print("F: " + obj.key)
-                        download_to_local(bucket, obj.key, 0)
-                        continue
+                # if key.endswith("MD5.txt"):
+                #     prefix = key[:key.index("MD5.txt")]
+                #     if prefix in DNA_list:
+                #         # print("F: " + obj.key)
+                #         download_to_local(bucket, obj.key, 0)
+                #         continue
                 prefix = key[:key.index("00.merge")]
 
             except ValueError:
@@ -137,28 +149,34 @@ def all_list_md5_dna(bucket):
                 if not os.path.exists(dir):
                     os.makedirs(dir)
                     continue
-        if iter_complete ==False:
-            for dna_dir in DNA_list:
-                list = [download_local_save_prefix,"DNA",dna_dir]
-                root_dir = "/".join(list)
-                subprocess.Popen(["D:\\Git\\git-bash.exe", "-c", f"python file_check.py -d {root_dir} ; bash"])
-            iter_complete = True
+
 
         if (prefix in DNA_list) and key.endswith("/")==False:
             download_to_local(bucket, obj.key, 0)
 def all_list_md5_rna(bucket):
     iter_complete = False
+    for rna_dir in RNA_list:
+        prefix = rna_dir
+        list = [download_local_save_prefix, "RNA", prefix]
+        dir = "/".join(list)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        key = os.path.join(prefix, "MD5.txt")
+        key = key.replace("\\","/")
+        download_to_local(bucket, key, 1)
+        root_dir = "/".join(list)
+        subprocess.Popen(["D:\\Git\\git-bash.exe", "-c", f"python file_check.py -d {root_dir} ; bash"])
     for obj in oss2.ObjectIterator(bucket):
         key = obj.key
         # print(key)
         if key.count("/") >= 2:
             try:
-                if key.endswith("MD5.txt"):
-                    prefix = key[:key.index("MD5.txt")]
-                    if (prefix in RNA_list):
-                        # print("F: " + obj.key)
-                        download_to_local(bucket, obj.key, 1)
-                        continue
+                # if key.endswith("MD5.txt"):
+                #     prefix = key[:key.index("MD5.txt")]
+                #     if (prefix in RNA_list):
+                #         # print("F: " + obj.key)
+                #         download_to_local(bucket, obj.key, 1)
+                #         continue
                 prefix = key[:key.index("00.merge")]
 
             except ValueError:
@@ -175,12 +193,8 @@ def all_list_md5_rna(bucket):
                 if not os.path.exists(dir):
                     os.makedirs(dir)
                     continue
-        if iter_complete ==False:
-            for rna_dir in RNA_list:
-                list = [download_local_save_prefix,"RNA",rna_dir]
-                root_dir = "/".join(list)
-                subprocess.Popen(["D:\\Git\\git-bash.exe", "-c", f"python file_check.py -d {root_dir} ; bash"])
-            iter_complete = True
+
+
 
         if (prefix in RNA_list) and key.endswith("/")==False:
             download_to_local(bucket, obj.key, 1)
@@ -259,17 +273,20 @@ def download_to_local(bucket, object_name,option):
         down_dir = "/".join(list)
         dir = down_dir.replace("\\", "/")
         
-        print(dir)
-        oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
-        print("")
+
+        if not os.path.exists(dir):
+            print(dir)
+            oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
+            print("")
     else:
         list = [download_local_save_prefix,"DNA", object_name]
         down_dir = "/".join(list)
         dir = down_dir.replace("\\", "/")
-        
-        print(dir)
-        oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
-        print("")
+
+        if not os.path.exists(dir):
+            print(dir)
+            oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
+            print("")
 
 
 

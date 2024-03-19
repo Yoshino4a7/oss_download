@@ -258,18 +258,18 @@ def download_to_local(bucket, object_name,option):
         list = [download_local_save_prefix,"RNA", object_name]
         down_dir = "/".join(list)
         dir = down_dir.replace("\\", "/")
-        if not os.path.exists(dir):
-            print(dir)
-            bucket.get_object_to_file(object_name, dir, progress_callback=percentage)
-            print("")
+        
+        print(dir)
+        oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
+        print("")
     else:
         list = [download_local_save_prefix,"DNA", object_name]
         down_dir = "/".join(list)
         dir = down_dir.replace("\\", "/")
-        if not os.path.exists(dir):
-            print(dir)
-            bucket.get_object_to_file(object_name, dir, progress_callback=percentage)
-            print("")
+        
+        print(dir)
+        oss2.resumable_download(bucket,object_name, dir, progress_callback=percentage)
+        print("")
 
 
 
